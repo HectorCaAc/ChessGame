@@ -3,7 +3,7 @@ from pyglet import shapes
 
 from game import board, controller, load, pawn, resources
 
-# Width & Height
+pyglet.options['debug_gl'] = False
 
 # something to do is smaller is way to big right now
 game_window = pyglet.window.Window(800,700, resizable=True)

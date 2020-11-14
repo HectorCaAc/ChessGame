@@ -7,3 +7,4 @@ class Piece(pyglet.sprite.Sprite):
         super().__init__(*args, **kwargs)
         self.dead = False
         self.team = None
+        self.first_move = True

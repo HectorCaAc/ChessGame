@@ -2,11 +2,11 @@ from game import piece
 
 class Pawn(piece.Piece):
 
-    def __init__(self, move_up,  *args, **kwargs):
+    def __init__(self, move_up, team, *args, **kwargs):
         super(Pawn, self).__init__(*args, **kwargs)
-        self.first_move = True
         self.move_up = move_up
         self.name = "pawn"
+        self.team = team
 
     def move(self):
         possible_moves = set()
