@@ -8,16 +8,27 @@ class Pawn(piece.Piece):
         self.name = "pawn"
         self.team = team
 
-    def move(self):
+    def move(self, current_row, current_column):
+        # Pawn arrived to the other side of the board
+        if current_row == 7 or current_row == 0:
+            return {}
         possible_moves = set()
         if self.move_up:
-            possible_moves.add((0,1))
+            possible_moves.add((1,0))
             if self.first_move:
-                possible_moves.add((0,2))
+                possible_moves.add((2,0))
         else:
-            possible_moves.add((0,-1))
+            possible_moves.add((-1,0))
             if self.first_move:
-                possible_moves.add((0,-2))
+                possible_moves.add((-2,0))
         return possible_moves
 
-    
+    def attack(self, current_row, current_column):
+        check_enemies = set()
+        if self.move_up:
+            check_enemies.add((1, -1))
+            check_enemies.add((1,1))
+        else:
+            check_enemies.add((-1,-1))
+            check_enemies.add((-1,1))
+        return check_enemies

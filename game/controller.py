@@ -34,6 +34,7 @@ class Controller():
         start_x = 195
         start_y = 145
         offset =0 
+        # draw whites figure
         for index in range(8):
             self.pieces_location[1][index] = pawn.Pawn(True, 'white',resources.white_pawns, start_x+offset,start_y, batch =self.batch)
             offset += 50
@@ -49,37 +50,64 @@ class Controller():
                 'row': row    
             }
 
+    """
+        PAWN
+        rook- bishop- queen - king ( similar move differnt movement)
+        knight
+    """
+    def moveWithOutJump(self, row, column, moves, attack_piece):
+        """
+            Take an array for moves and be sure sorte it and check if there is an enemy there
+            if there is there stop
+        """
+        capable_move = set()
+        piece = self.pieces_location[row][column]
+        for off_set_row, off_set_column in moves:
+            candidate_x = off_set_row+row
+            candidate_y = off_set_column + column
+            space = self.pieces_location[candidate_x][candidate_y]
+            if space is None:
+                capable_move.add((candidate_x, candidate_y))
+            elif space.team != piece.team and attack_piece:
+                capable_move.add((candidate_x, candidate_y))
+                break
+            else:
+                break
+        return capable_move
+
+    def possibleMovesPawn(self, row, column):
+        piece = self.pieces_location[row][column]
+        moves = piece.move(row, column)
+        attack = piece.attack(row,column)
+        possible_moves = self.moveWithOutJump(row, column, moves, False)
+        for diagonal in attack:
+            candidate_x = row + diagonal[0]
+            candidate_y = column + diagonal[1]
+            if candidate_x > -1 and candidate_x < 8 and candidate_y > -1 and candidate_y < 8:
+                space = self.pieces_location[candidate_x][candidate_y]
+                if space is not None and space.team != piece.team:
+                    possible_moves.add((candidate_x, candidate_y))
+        print('moves')
+        print(moves)
+        print(attack)
+        return possible_moves
+            
+
+
     def piece_selected(self, row, column):
         piece = self.pieces_location[row][column]
         moves = set()
-        print('Location of the pawn [{},{}]'.format(row, column))
+        check_enemies = piece.attack(row, column)
+        possible_moves = piece.move(row, column)
         if piece.name == 'pawn':
-            # Check if there are enemies in the sides
-                # check if there is oponents in the adjacent
-            moves = moves.union(piece.move())
-            if piece.move_up :
-                if row == 7:
-                    return
-                check_enemies = [[1,-1], [1,1]]
-            else:
-                if row == 0:
-                    return
-                check_enemies = [[-1,-1], [-1,1]]
-            for add_x, add_y in check_enemies:
-                candidate_x = row + add_x
-                candidate_y = column + add_y
-                print('\tCandiate [{},{}]'.format(candidate_x, candidate_y))
-                if candidate_x >= 0 and candidate_x <= 7 and \
-                    candidate_y >= 0 and candidate_y <= 7:
-                    if self.pieces_location[candidate_x][candidate_y] is not None \
-                        and self.pieces_location[candidate_x][candidate_y] != piece.team:
-                        print('at the location [{},{}] there is {}'.format(candidate_x, candidate_y, self.pieces_location[candidate_x][candidate_y] ))
-                        moves.add((candidate_x, candidate_y))
+            moves=  self.possibleMovesPawn(row, column)
         self.clean_board()
         # keep that if there are some squares
         square_select = self.convert_row_column_to_square(row, column)
         self.square_selected['square_selected'] = square_select
         # self.squares_selected[square_select] = {}
+        print('*'*10+'Arguments that are being passe to the board')
+        print('{},{},{}'.format(row, column, str(moves)))
         self.square_selected['possible_squares'] = self.board.moves(row, column, moves)
 
     def clean_board(self):
@@ -106,19 +134,14 @@ class Controller():
         print('new {}'.format(str(new_square_cordinates)))
         piece_selected = self.pieces_location[old_square_cordinates['row']][old_square_cordinates['column']]
         possible_place = self.pieces_location[new_square_cordinates['row']][new_square_cordinates['column']]
-        if possible_place is None:
-            piece_selected.first_move= False
-            new_graphics_location = self.calculate_update_square(new_square_cordinates)
-            print('\t new cordinates {}'.format(str(new_graphics_location)))
-            piece_selected.update(y= new_graphics_location['y_update'], x=new_graphics_location['x_update'])
-            piece_selected
-            self.pieces_location[new_square_cordinates['row']][new_square_cordinates['column']] = piece_selected
-            self.pieces_location[old_square_cordinates['row']][old_square_cordinates['column']] = None
-        elif piece_selected.team != possible_place.team:
-            piece_selected.first_move = False
-            self.pieces_location[new_square_cordinates['row']][new_square_cordinates['column']] = piece_selected
-            self.pieces_location[old_square_cordinates['row']][old_square_cordinates['column']] = None
-            possible_place.dead = True
+        new_graphics_location = self.calculate_update_square(new_square_cordinates)
+        piece_selected.update(y= new_graphics_location['y_update'], x=new_graphics_location['x_update'])
+        if possible_place is not None:
+            if piece_selected.team != possible_place.team:
+                piece_selected.dead = True
+        self.pieces_location[new_square_cordinates['row']][new_square_cordinates['column']] = piece_selected
+        self.pieces_location[old_square_cordinates['row']][old_square_cordinates['column']] = None
+        piece_selected.first_move = False
         self.clean_board()
         
     def on_mouse_press(self, x, y, button, modifiers):

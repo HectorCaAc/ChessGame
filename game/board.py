@@ -60,15 +60,17 @@ class Board():
     def moves(self, row, column, possible_moves):
         """
         range: list, squares that should be pinted in other color
+        possible_moves [int]: 2d every item is [add_column, add_row]
         """
         start_square_x = (row*50)+200
         start_square_y = (column*50)+200
         index = row*8 +column
         previous = {}
-        for next_column, next_row in possible_moves:
-            new_index = index + next_column + (8*next_row)
+        for next_row, next_column in possible_moves:
+            new_index = (8*next_row) + next_column
             previous[new_index] = self.squares[new_index].color
-            print('{}, {}'.format(next_row, next_column))
+            print('2d coordinates [{}, {}]'.format(next_row, next_column))
+            print('1d coordinate [{}]'.format(new_index))
             self.squares[new_index].color = self.move_square
         return previous
     
