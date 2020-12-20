@@ -2,11 +2,18 @@ from game import piece
 
 class Pawn(piece.Piece):
 
-    def __init__(self, move_up, team, *args, **kwargs):
+    def __init__(self, team, *args, **kwargs):
+        print('Inside of the Pawn class')
+        print(args)
+        print(kwargs)
+        value_move_up = kwargs['piece_move_up']
+        del kwargs['piece_move_up']
+        print(kwargs)
         super(Pawn, self).__init__(*args, **kwargs)
-        self.move_up = move_up
+        self.move_up = value_move_up
         self.name = "pawn"
         self.team = team
+        print('pawn created ')
 
     def move(self, current_row, current_column):
         # Pawn arrived to the other side of the board

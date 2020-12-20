@@ -1,7 +1,7 @@
 import pyglet
 from pyglet.window import mouse
 
-from game import pawn, resources, rook
+from game import pawn, resources, rook, bishop
 
 
 class Controller():
@@ -25,32 +25,49 @@ class Controller():
 
     def draw_pawns(self):
         # draw the black ones first
-        start_x = 195
-        start_y = 395
-        offset = 0
-        for index in range(8):
-            self.pieces_location[6][index] = pawn.Pawn(False, 'black', resources.black_pawns, start_x+offset,start_y, batch =self.batch)
-            offset += 50
-        start_x = 195
-        start_y = 145
-        offset =0 
-        # draw whites figure
-        for index in range(8):
-            self.pieces_location[1][index] = pawn.Pawn(True, 'white',resources.white_pawns, start_x+offset,start_y, batch =self.batch)
-            offset += 50
+        black_pawns = [195,395,6,0]
+        self.draw_figures(black_pawns, 8, 'black', pawn.Pawn, resources.black_pawns, 50, piece_move_up=False)
+        white_pawns = [195, 145, 1, 0]
+        self.draw_figures(white_pawns, 8, 'white', pawn.Pawn, resources.white_pawns, 50, piece_move_up=True)
     
     def draw_rooks(self):
-        start_x = 195
-        start_y = 95
-        offset =0
-        for index in range(2):
-            self.pieces_location[0][index*7] = rook.Rook('white', resources.white_rook, start_x+offset, start_y, batch=self.batch)
-            offset += 350
+        rook_white = [195, 95, 0,0]
+        rook_black = [195, 445, 7,0]
+        self.draw_figures(rook_white, 2, 'white', rook.Rook, resources.white_rook, 350, gaps=7)
+        self.draw_figures(rook_black, 2, 'black', rook.Rook, resources.black_rook, 350, gaps=7)
+    
+    def draw_bishops(self):
+        white_bishop = [295, 95,0, 2]
+        self.draw_figures(white_bishop, 2, 'white', bishop.Bishop, resources.white_bishop, 150, gaps=3)
+
+    def draw_figures(self,figure, number_copies, team, class_object, resource, increment_offset, gaps=None, *args, **kwargs):
+        """
+            TODO: improve the description of thie function 
+            figure:  Array size 4.
+                index = 0 => locaiton of x 2d map
+                index = 1 => location of y 2d map
+                index = 2 => index row in logic map
+                index = 3 => index colum in logic map
+            black_start same logic
+            number_copies: int number of figures to draw
+            gaps: there is space betwen pieces. Default is 1
+            team: string. 
+        """
+        print('Inside of the function of draw figures')
+        print(args)
+        print(kwargs)
+        if gaps is None:
+            gaps = 1
+        start_x = figure[0]
+        start_y = figure[1]
+        index_row = figure[2]
+        index_column = figure[3]
         offset = 0
-        start_y = 445
-        for index in range(2):
-            self.pieces_location[7][index*7] = rook.Rook('black', resources.black_rook, start_x+offset, start_y, batch=self.batch)
-            offset += 350
+        for index in range(number_copies):
+            print('row {}'.format(index_row))
+            print('column {}'.format(index_column+(index*gaps)))
+            self.pieces_location[index_row][index_column+(index*gaps)] = class_object(team, resource, start_x+offset, start_y, batch =self.batch, *args, **kwargs)
+            offset+= increment_offset
 
 
     def convert_row_column_to_square(self, row, column):
@@ -139,6 +156,8 @@ class Controller():
         elif piece.name == 'rook':
             moves = self.possible_moves_line(row, column)
             print('moves from the rook [{}]'.format(str(moves)))
+        elif piece.name == 'bishop':
+            moves = self.possible_moves_line(row, column)
         self.clean_board()
         # keep that if there are some squares
         square_select = self.convert_row_column_to_square(row, column)
