@@ -1,7 +1,7 @@
 import pyglet
 from pyglet.window import mouse
 
-from game import pawn, resources
+from game import pawn, resources, rook
 
 
 class Controller():
@@ -38,6 +38,20 @@ class Controller():
         for index in range(8):
             self.pieces_location[1][index] = pawn.Pawn(True, 'white',resources.white_pawns, start_x+offset,start_y, batch =self.batch)
             offset += 50
+    
+    def draw_rooks(self):
+        start_x = 195
+        start_y = 95
+        offset =0
+        for index in range(2):
+            self.pieces_location[0][index*7] = rook.Rook('white', resources.white_rook, start_x+offset, start_y, batch=self.batch)
+            offset += 350
+        offset = 0
+        start_y = 445
+        for index in range(2):
+            self.pieces_location[7][index*7] = rook.Rook('black', resources.black_rook, start_x+offset, start_y, batch=self.batch)
+            offset += 350
+
 
     def convert_row_column_to_square(self, row, column):
         return row*8 + column
@@ -75,7 +89,28 @@ class Controller():
                 break
         return capable_move
 
-    def possibleMovesPawn(self, row, column):
+    def possible_moves_line(self, row, column):
+        piece = self.pieces_location[row][column]
+        check_positions = piece.move(row, column)
+        future_moves = set()
+        for dirrection in check_positions:
+            stop = False
+            index = 0
+            while index < len(check_positions[dirrection]) and not stop:
+                movement = check_positions[dirrection][index]
+                row = movement[0]
+                column = movement[1]
+                if self.pieces_location[row][column] is None:
+                    future_moves.add(movement)
+                else:
+                    if self.pieces_location[row][column].team != piece.team:
+                        future_moves.add(movement)
+                    stop = True
+                index +=1
+        return future_moves
+        # return moves
+
+    def possible_moves_pawn(self, row, column):
         piece = self.pieces_location[row][column]
         moves = piece.move(row, column)
         attack = piece.attack(row,column)
@@ -100,7 +135,10 @@ class Controller():
         check_enemies = piece.attack(row, column)
         possible_moves = piece.move(row, column)
         if piece.name == 'pawn':
-            moves=  self.possibleMovesPawn(row, column)
+            moves =  self.possible_moves_pawn(row, column)
+        elif piece.name == 'rook':
+            moves = self.possible_moves_line(row, column)
+            print('moves from the rook [{}]'.format(str(moves)))
         self.clean_board()
         # keep that if there are some squares
         square_select = self.convert_row_column_to_square(row, column)
