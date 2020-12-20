@@ -18,6 +18,7 @@ board_control = controller.Controller(board_view, main_batch)
 board_control.draw_pawns()
 board_control.draw_rooks()
 board_control.draw_bishops()
+board_control.draw_queens()
 
 # Lets assume that the player selected white for now
 # black_paws = load.paws("black", 225,925, 100, main_batch)

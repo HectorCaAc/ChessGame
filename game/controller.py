@@ -1,7 +1,7 @@
 import pyglet
 from pyglet.window import mouse
 
-from game import pawn, resources, rook, bishop
+from game import pawn, resources, rook, bishop, queen
 
 
 class Controller():
@@ -38,7 +38,17 @@ class Controller():
     
     def draw_bishops(self):
         white_bishop = [295, 95,0, 2]
+        black_bishop = [295, 445,7,2]
         self.draw_figures(white_bishop, 2, 'white', bishop.Bishop, resources.white_bishop, 150, gaps=3)
+        self.draw_figures(black_bishop, 2, 'black', bishop.Bishop, resources.black_bishop, 150, gaps=3)
+
+    def draw_queens(self):
+        white_queen = [395, 95, 0,4 ]
+        self.draw_figures(white_queen, 1, 'white', queen.Queen, resources.white_queen, 0)
+        black_queen = [395,445, 7,4]
+        self.draw_figures(black_queen, 1, 'black', queen.Queen, resources.black_queen, 0)
+        
+
 
     def draw_figures(self,figure, number_copies, team, class_object, resource, increment_offset, gaps=None, *args, **kwargs):
         """
@@ -157,6 +167,8 @@ class Controller():
             moves = self.possible_moves_line(row, column)
             print('moves from the rook [{}]'.format(str(moves)))
         elif piece.name == 'bishop':
+            moves = self.possible_moves_line(row, column)
+        elif piece.name == 'queen':
             moves = self.possible_moves_line(row, column)
         self.clean_board()
         # keep that if there are some squares
