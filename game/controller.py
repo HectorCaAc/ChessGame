@@ -1,7 +1,7 @@
 import pyglet
 from pyglet.window import mouse
 
-from game import pawn, resources, rook, bishop, queen, king
+from game import pawn, resources, rook, bishop, queen, king, knight
 
 
 class Controller():
@@ -52,7 +52,12 @@ class Controller():
         black_king = [345, 445,7,3]
         self.draw_figures(white_king, 1, 'white', king.King, resources.white_king, 0)
         self.draw_figures(black_king, 1, 'black', king.King, resources.black_king, 0)
-        
+    
+    def draw_knigths(self):
+        white_knights = [245, 95,0,1]
+        black_knights = [245, 445, 7,1]
+        self.draw_figures(white_knights, 2, 'white', knight.Knight, resources.white_knights, 250, gaps=5)
+        self.draw_figures(black_knights, 2, 'black', knight.Knight, resources.black_knights, 250, gaps=5)
 
 
     def draw_figures(self,figure, number_copies, team, class_object, resource, increment_offset, gaps=None, *args, **kwargs):
@@ -176,6 +181,9 @@ class Controller():
             moves = self.possible_moves_line(row, column)
         elif piece.name == 'king':
             moves = self.possible_moves_line(row, column)
+        elif piece.name == 'knight':
+            moves = self.possible_moves_line(row, column)
+
         self.clean_board()
         # keep that if there are some squares
         square_select = self.convert_row_column_to_square(row, column)
