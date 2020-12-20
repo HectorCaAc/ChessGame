@@ -14,4 +14,7 @@ black_bishop = pyglet.resource.image('Chess_bdt60.png')
 
 white_queen = pyglet.resource.image('Chess_qlt60.png')
 black_queen = pyglet.resource.image('Chess_qdt60.png')
+
+white_king = pyglet.resource.image('Chess_klt60.png')
+black_king = pyglet.resource.image('Chess_kdt60.png')
                                     

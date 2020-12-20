@@ -1,7 +1,7 @@
 import pyglet
 from pyglet.window import mouse
 
-from game import pawn, resources, rook, bishop, queen
+from game import pawn, resources, rook, bishop, queen, king
 
 
 class Controller():
@@ -24,7 +24,6 @@ class Controller():
         # self.draw_pawns()
 
     def draw_pawns(self):
-        # draw the black ones first
         black_pawns = [195,395,6,0]
         self.draw_figures(black_pawns, 8, 'black', pawn.Pawn, resources.black_pawns, 50, piece_move_up=False)
         white_pawns = [195, 145, 1, 0]
@@ -47,12 +46,19 @@ class Controller():
         self.draw_figures(white_queen, 1, 'white', queen.Queen, resources.white_queen, 0)
         black_queen = [395,445, 7,4]
         self.draw_figures(black_queen, 1, 'black', queen.Queen, resources.black_queen, 0)
+
+    def draw_kings(self):
+        white_king = [345, 95, 0,3]
+        black_king = [345, 445,7,3]
+        self.draw_figures(white_king, 1, 'white', king.King, resources.white_king, 0)
+        self.draw_figures(black_king, 1, 'black', king.King, resources.black_king, 0)
         
 
 
     def draw_figures(self,figure, number_copies, team, class_object, resource, increment_offset, gaps=None, *args, **kwargs):
         """
-            TODO: improve the description of thie function 
+            TODO: improve the description of this function
+                - also improve the data structure use for this. It kinda looks younki
             figure:  Array size 4.
                 index = 0 => locaiton of x 2d map
                 index = 1 => location of y 2d map
@@ -63,9 +69,6 @@ class Controller():
             gaps: there is space betwen pieces. Default is 1
             team: string. 
         """
-        print('Inside of the function of draw figures')
-        print(args)
-        print(kwargs)
         if gaps is None:
             gaps = 1
         start_x = figure[0]
@@ -92,9 +95,8 @@ class Controller():
             }
 
     """
-        PAWN
+        PAWN - knight
         rook- bishop- queen - king ( similar move differnt movement)
-        knight
     """
     def moveWithOutJump(self, row, column, moves, attack_piece):
         """
@@ -119,6 +121,8 @@ class Controller():
     def possible_moves_line(self, row, column):
         piece = self.pieces_location[row][column]
         check_positions = piece.move(row, column)
+        print('moves that can happend for piece {}'.format(piece.name))
+        print(check_positions)
         future_moves = set()
         for dirrection in check_positions:
             stop = False
@@ -169,6 +173,8 @@ class Controller():
         elif piece.name == 'bishop':
             moves = self.possible_moves_line(row, column)
         elif piece.name == 'queen':
+            moves = self.possible_moves_line(row, column)
+        elif piece.name == 'king':
             moves = self.possible_moves_line(row, column)
         self.clean_board()
         # keep that if there are some squares
