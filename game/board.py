@@ -69,8 +69,6 @@ class Board():
         for next_row, next_column in possible_moves:
             new_index = (8*next_row) + next_column
             previous[new_index] = self.squares[new_index].color
-            print('2d coordinates [{}, {}]'.format(next_row, next_column))
-            print('1d coordinate [{}]'.format(new_index))
             self.squares[new_index].color = self.move_square
         return previous
     

@@ -21,6 +21,8 @@ class Controller():
                 'square_selected': None,
                 'possible_squares': {}
             }
+
+        self.previous_move = 'black'
         # self.draw_pawns()
 
     def draw_pawns(self):
@@ -246,7 +248,8 @@ class Controller():
         if square_selected in self.square_selected['possible_squares']:
             # current piece is going to move to next square
             self.move_piece(self.square_selected['square_selected'],square_selected)
-        elif self.pieces_location[row][column] is not None:
+            self.previous_move = 'white' if self.previous_move == 'black' else 'black'
+        elif self.pieces_location[row][column] is not None and self.pieces_location[row][column].team != self.previous_move:
             print('possible moves ')
             self.piece_selected(row, column )
         else:
